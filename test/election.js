@@ -68,7 +68,6 @@ contract("Election", accounts => {
   });
 
   it("no voting for invalid candidates", () => {
-    const accountId = 1;
     return Election.deployed()
       .then(instance => {
         electionInstance = instance;
@@ -86,5 +85,26 @@ contract("Election", accounts => {
         assert.isOk(false, "did not see candidate upper bound exception")
       )
       .catch(e => assert.isOk(e.message.indexOf("revert") >= 0, e.message));
+  });
+
+  it("verify voting event", () => {
+    const candidateId = 1;
+    return Election.deployed()
+      .then(instance => {
+        electionInstance = instance;
+        return electionInstance.vote(candidateId, {
+          from: web3.eth.accounts[3]
+        });
+      })
+      .then(receipt => {
+        assert(receipt.logs.length, 1, "saw an event");
+        assert(receipt.logs[0].event, "votedEvent", "saw the correct event");
+        assert(
+          receipt.logs[0].args._candidateId,
+          candidateId,
+          "saw the correct event"
+        );
+      })
+      .catch(e => console.log(e.message));
   });
 });
