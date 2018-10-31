@@ -12,6 +12,8 @@ contract Election {
   uint public candidatesCount;
   mapping(address => bool) public voters;
 
+  event votedEvent(uint indexed _candidateId);
+
   constructor() public {
     addCandidate("Candidate 1");
     addCandidate("Candidate 2");
@@ -26,5 +28,6 @@ contract Election {
     require(_candidateId > 0 && _candidateId <= candidatesCount, "invalid candidate");
     voters[msg.sender] = true;
     candidates[_candidateId].voteCount++;
+    emit votedEvent(_candidateId);
   }
 }
